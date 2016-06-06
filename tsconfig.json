@@ -8,7 +8,8 @@
 	"files": [
 		"./lib/jquery.d.ts",
 		"./lib/materialize-css.d.ts",
-		"./src/game.ts"
+		"./src/game.ts",
+		"./src/stock.ts"
 	],
 	"atom": {
 		"rewriteTsconfig": true

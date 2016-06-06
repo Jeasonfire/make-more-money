@@ -21,34 +21,38 @@
             }
         </style>
     </head>
+
     <body>
         <div class="container">
             <div class="row">
+
+                <!-- Header -->
                 <div class="col s12">
                     <h1>Make More Money!</h1>
                 </div>
+                <!-- /Header -->
+
+                <!-- Stocks! -->
                 <div class="col s12 m8">
-                    <!-- Stocks! -->
-                    <div class="section">
-                        <h4>The Boop Corporation</h4>
-                        <p class="flow-text">Ooh look at this cool text that should look quite good and wrap around very well. Magic? Yeah, probably, it's css.</p>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <h4>The Beep Company</h4>
-                        <p class="flow-text">Ooh look at this cool text that should look quite good and wrap around very well. Magic? Yeah, probably, it's css.</p>
-                    </div>
-                    <!-- /Stocks -->
+                    <h4>Stocks</h4>
+                    <div id="stocks" class="row"></div>
                 </div>
+                <!-- /Stocks -->
+
+                <!-- Stats -->
                 <div class="col s12 m4">
                     <h4>Cash: <b>$<span id="money">1000</span> million</b></h4>
                     <h4>Reputation: <b><span id="rep"></span>% evil</b></h4>
+                    <button class="btn waves-effect waves-light cyan disabled">Government bailout<i class="material-icons right">send</i></button>
                 </div>
+                <!-- /Stats -->
+
             </div>
         </div>
 
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+        <script type="text/javascript" src="build/stock.js"></script>
         <script type="text/javascript" src="build/game.js"></script>
     </body>
 </html>
