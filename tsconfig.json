@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"outDir": "build"
+	},
+	"filesGlob": [
+		"./**/*.ts"
+	],
+	"files": [
+		"./lib/jquery.d.ts",
+		"./lib/materialize-css.d.ts",
+		"./src/game.ts"
+	],
+	"atom": {
+		"rewriteTsconfig": true
+	}
+}

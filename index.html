@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/png" href="gfx/favicon.png" />
+        <title>Make More Money!</title>
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css" media="screen,projection" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <style>
+            html {
+                font-family: Oswald, sans-serif;
+            }
+
+            @font-face {
+                font-family: Oswald;
+                src: url("gfx/Oswald-Light.ttf");
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h1>Make More Money!</h1>
+                </div>
+                <div class="col s12 m8">
+                    <!-- Stocks! -->
+                    <div class="section">
+                        <h4>The Boop Corporation</h4>
+                        <p class="flow-text">Ooh look at this cool text that should look quite good and wrap around very well. Magic? Yeah, probably, it's css.</p>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="section">
+                        <h4>The Beep Company</h4>
+                        <p class="flow-text">Ooh look at this cool text that should look quite good and wrap around very well. Magic? Yeah, probably, it's css.</p>
+                    </div>
+                    <!-- /Stocks -->
+                </div>
+                <div class="col s12 m4">
+                    <h4>Cash: <b>$<span id="money">1000</span> million</b></h4>
+                    <h4>Reputation: <b><span id="rep"></span>% evil</b></h4>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+        <script type="text/javascript" src="build/game.js"></script>
+    </body>
+</html>
