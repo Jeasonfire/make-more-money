@@ -37,13 +37,11 @@ class Stock {
         this.price_change_volatility = this.new_price_change_volatility();
         this.price_change_time = this.new_price_change_time();
 
-        this.set_name("Temp Corporation");
+        this.set_name(Generator.generate_name());
         this.set_price(1000);
         this.set_total_amount(10);
         this.set_can_buy(true);
         this.set_can_sell(false);
-        this.add_attribute("price-down");
-        this.add_attribute("reputation-up");
     }
 
     private new_price_change_range(): number {
@@ -98,12 +96,7 @@ class Stock {
     }
 
     public get_shortened_name(): string {
-        let result = "";
-        let name_parts = this.name.split(" ");
-        for (let i = 0; i < name_parts.length; i++) {
-            result += name_parts[i].substring(0, Math.min(2, name_parts[i].length)).toUpperCase();
-        }
-        return result;
+        return this.name.substring(0, Math.min(3, this.name.length)).toUpperCase();
     }
 
     public get_name(): string { return this.name; }
@@ -167,7 +160,6 @@ class Stock {
             this.attributes.splice(index, 1);
             $("#" + this.id + "-" + attribute).remove();
         }
-        console.log(this.attributes);
     }
 
     public clear_attributes() {
