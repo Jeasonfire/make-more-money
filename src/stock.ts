@@ -19,13 +19,23 @@ class Stock {
     private bought_amount: number = 0;
     private can_sell: boolean = false;
     private can_buy: boolean = false;
-
     private attributes: string[] = [];
+
+    /* Things that affect how the stock will do in the future */
+    private price_change_range = 0;
+    private price_change_per_second: number = 0;
+    private price_change_volatility: number = 0;
+    private price_change_time: number = 0;
 
     public constructor() {
         this.id = Stock.used_ids++;
         let html = stock_template_html.replace(/stock-id/g, "" + this.id);
         $("#stocks").html($("#stocks").html() + html);
+
+        this.price_change_range = this.new_price_change_range();
+        this.price_change_per_second = this.new_price_change_per_second();
+        this.price_change_volatility = this.new_price_change_volatility();
+        this.price_change_time = this.new_price_change_time();
 
         this.set_name("Temp Corporation");
         this.set_price(1000);
@@ -34,6 +44,57 @@ class Stock {
         this.set_can_sell(false);
         this.add_attribute("price-down");
         this.add_attribute("reputation-up");
+    }
+
+    private new_price_change_range(): number {
+        return 250 * (Math.random() * 0.5 + 0.75);
+    }
+
+    private new_price_change_per_second(): number {
+        return this.price_change_range * (Math.random() * 2 - 1);
+    }
+
+    private new_price_change_volatility(): number {
+        return 0.5 + Math.random();
+    }
+
+    private new_price_change_time(): number {
+        return Date.now() + this.price_change_volatility * 5000;
+    }
+
+    public update(delta_time: number) {
+        /* Update prices */
+        this.set_price(this.price + this.price_change_per_second * delta_time);
+        if (this.price_change_time < Date.now()) {
+            this.price_change_per_second = this.new_price_change_per_second();
+            if (Math.random() < 0.3) {
+                this.price_change_volatility = this.new_price_change_volatility();
+            }
+            this.price_change_time = this.new_price_change_time();
+        }
+
+        /* Update attibutes */
+        /* Price changing attribs */
+        if (Math.abs(this.price_change_per_second) < this.price_change_range / 10) {
+            this.remove_attribute("price-up");
+            this.remove_attribute("price-down");
+            this.add_attribute("price-stable");
+        } else {
+            if (this.price_change_per_second < 0) {
+                this.remove_attribute("price-up");
+                this.remove_attribute("price-stable");
+                this.add_attribute("price-down");
+            } else {
+                this.remove_attribute("price-down");
+                this.remove_attribute("price-stable");
+                this.add_attribute("price-up");
+            }
+        }
+        /* /Price changing attribs */
+    }
+
+    public remove() {
+        $("#" + this.id + "-stock").remove();
     }
 
     public get_shortened_name(): string {
@@ -60,26 +121,19 @@ class Stock {
 
     public set_price(price: number) {
         this.price = price;
-        $("#" + this.id + "-price").html("" + this.price);
-    }
-
-    public add_price(delta_price: number) {
-        this.set_price(this.price + delta_price);
+        $("#" + this.id + "-price").html((this.price / 1000).toFixed(1) + "k");
+        this.set_total_amount(this.total_amount);
     }
 
     public set_total_amount(total_amount: number) {
         this.total_amount = total_amount;
-        $("#" + this.id + "-total-value").html("" + this.price * this.total_amount);
+        $("#" + this.id + "-total-value").html((this.price * this.total_amount / 1000).toFixed(1) + "k");
         this.set_bought_amount(this.bought_amount);
     }
 
     public set_bought_amount(bought_amount: number) {
         this.bought_amount = bought_amount;
-        $("#" + this.id + "-owned-percent").html("" + Math.round(100 * this.bought_amount / this.total_amount));
-    }
-
-    public add_bought_amount(delta_bought_amount: number) {
-        this.set_bought_amount(this.bought_amount + delta_bought_amount);
+        $("#" + this.id + "-owned-percent").html("" + (100 * this.bought_amount / this.total_amount).toFixed(1));
     }
 
     public set_can_buy(can_buy: boolean) {
@@ -127,6 +181,7 @@ let StockAttribute = {
     "reputation-up": ["favorite", "green", "This company is doing something charitable!"],
     "reputation-down": ["thumb_down", "red", "This company is doing something unethical!"],
     "price-up": ["trending_up", "cyan", "This stock is going up!"],
+    "price-stable": ["trending_flat", "", "This stock is stagnating."],
     "price-down": ["trending_down", "orange", "This stock is going down!"],
 };
 

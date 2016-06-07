@@ -10,17 +10,38 @@ let money: number = 0;
 let loans: number = 0;
 let reputation: number = 0;
 let stocks: Stock[] = [];
-
+let target_stocks_amount: number = 5;
 
 function update() {
-    // Update stats
+    /* Update timer */
+    let delta_time = 0.016;
+
+    /* Update stocks */
+    for (let i = 0; i < stocks.length; i++) {
+        if (stocks[i] === undefined) {
+            continue;
+        }
+        stocks[i].update(delta_time);
+        if (stocks[i].get_price() <= 0) {
+            Materialize.toast(stocks[i].get_name() + " is now bankrupt!", 5000, "red");
+            stocks[i].remove();
+            stocks.splice(i, 1);
+        }
+    }
+
+    /* New stocks if there aren't enough of them! */
+    if ((target_stocks_amount - stocks.length) * Math.random() > 0.9) {
+        create_stock();
+    }
+
+    /* Update stats */
     $("#networth").html("" + get_worth().toFixed(0));
     $("#money").html("" + money.toFixed(0));
     $("#loans").html("" + loans.toFixed(0));
     $("#stockworth").html("" + get_stock_worth().toFixed(0));
     $("#rep").html(get_reputation_message());
 
-    // Keep the loop going, browser!
+    /* Keep the loop going, browser! */
     requestAnimationFrame(update);
 }
 
@@ -50,6 +71,9 @@ function get_worth(): number {
 function get_stock_worth(): number {
     let worth = 0;
     for (let i = 0; i < stocks.length; i++) {
+        if (stocks[i] === undefined) {
+            continue;
+        }
         worth += stocks[i].get_price() * stocks[i].get_bought_amount();
     }
     return worth;
@@ -65,12 +89,17 @@ function pay_loans(): void {
 /* Stock utilities */
 function create_stock(): Stock {
     let stock = new Stock();
-    stocks[stock.id] = stock;
+    stocks.push(stock);
     return stock;
 }
 
 function get_stock(stock_id: number): Stock {
-    return stocks[stock_id];
+    for (let i = 0; i < stocks.length; i++) {
+        if (stocks[i] !== undefined && stocks[i].id === stock_id) {
+            return stocks[i];
+        }
+    }
+    return null;
 }
 
 function buy_stock(stock_id: number): void {
@@ -82,7 +111,7 @@ function buy_stock(stock_id: number): void {
         } else {
             money -= stock.get_price();
         }
-        stock.add_bought_amount(1);
+        stock.set_bought_amount(stock.get_bought_amount() + 1);
         stock.set_can_sell(true);
         if (stock.get_bought_amount() >= stock.get_total_amount()) {
             stock.set_can_buy(false);
@@ -95,7 +124,7 @@ function sell_stock(stock_id: number): void {
     let stock = get_stock(stock_id);
     if (stock !== undefined && stock.get_can_sell()) {
         money += stock.get_price();
-        stock.add_bought_amount(-1);
+        stock.set_bought_amount(stock.get_bought_amount() - 1);
         stock.set_can_buy(true);
         if (stock.get_bought_amount() <= 0) {
             stock.set_can_sell(false);
