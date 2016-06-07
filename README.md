@@ -10,3 +10,8 @@ Make More Money! is a game about investing\* and becoming rich. Invest in X corp
 * **[Material Design Icons](https://github.com/google/material-design-icons)**: Google's CC-BY icons used with the Material Design guidelines.
 * **[Materialize](http://materializecss.com/)**: An implementation for Google's Material Design in CSS and JS.
 * **[Oswald Font](https://www.fontsquirrel.com/fonts/oswald)**: A cool looking font made by [Vernon Adams](https://www.fontsquirrel.com/fonts/list/foundry/vernon-adams).
+
+## License
+This game is available under the CC0 license, so feel free to do whatever you want with this game. For more information, see COPYING.txt or [the Creative Commons page on CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+
+Note: Even though you can use everything here as you please, I'd be interested to see what you're doing with this project. So if you'd like, please send me a link to your project to contact@jeasonfi.re <3
