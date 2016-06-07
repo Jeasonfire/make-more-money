@@ -13,20 +13,24 @@ class Stock {
     public id: number;
 
     /* Stats and info about the stock */
-    private name: string;
-    private price: number;
-    private can_sell: boolean;
-    private can_buy: boolean;
+    private name: string = "";
+    private price: number = 0;
+    private can_sell: boolean = false;
+    private can_buy: boolean = false;
+
+    private attributes: string[] = [];
 
     public constructor() {
-        this.name = "Temp Corporation";
-        this.price = 100;
-        this.can_buy = true;
-        this.can_sell = true;
-
         this.id = Stock.used_ids++;
         let html = stock_template_html.replace(/stock-id/g, "" + this.id);
         $("#stocks").html($("#stocks").html() + html);
+
+        this.set_name("Temp Corporation");
+        this.set_price(100);
+        this.set_can_buy(true);
+        this.set_can_sell(false);
+        this.add_attribute("price-down");
+        this.add_attribute("reputation-up");
     }
 
     public get_shortened_name(): string {
@@ -42,6 +46,7 @@ class Stock {
     public get_price(): number { return this.price; }
     public get_can_buy(): boolean { return this.can_buy; }
     public get_can_sell(): boolean { return this.can_sell; }
+    public get_attributes(): string[] { return this.attributes; }
 
     public set_name(name: string) {
         this.name = name;
@@ -74,7 +79,36 @@ class Stock {
             $("#" + this.id + "-sell").addClass("disabled");
         }
     }
+
+    public add_attribute(attribute: string) {
+        if (this.attributes.indexOf(attribute) === -1) {
+            this.attributes.push(attribute);
+            $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-" + attribute + "' class='material-icons right chip small tooltipped " + StockAttribute[attribute][1] + "' data-position='top' data-delay='10' data-tooltip='" + StockAttribute[attribute][2] + "'>" + StockAttribute[attribute][0] + "</i>");
+        }
+    }
+
+    public remove_attribute(attribute: string) {
+        let index = this.attributes.indexOf(attribute);
+        if (index !== -1) {
+            this.attributes.splice(index, 1);
+            $("#" + this.id + "-" + attribute).remove();
+        }
+        console.log(this.attributes);
+    }
+
+    public clear_attributes() {
+        for (let i = 0; i < this.attributes.length; i++) {
+            this.remove_attribute(this.attributes[i]);
+        }
+    }
 }
+
+let StockAttribute = {
+    "reputation-up": ["favorite", "green", "This company is doing something charitable!"],
+    "reputation-down": ["thumb_down", "red", "This company is doing something unethical!"],
+    "price-up": ["trending_up", "cyan", "This stock is going up!"],
+    "price-down": ["trending_down", "orange", "This stock is going down!"],
+};
 
 let stock_template_html = `
 <div id="stock-id-stock" class="col s12">
@@ -108,8 +142,6 @@ let stock_template_html = `
         <!-- Stock attributes -->
         <div class="col s12 m8">
             <div id="stock-id-attributes">
-                <i class="material-icons right cyan chip small tooltipped" data-position="top" data-delay="10" data-tooltip="This stock is going up. Hop on the bandwagon!">trending_up</i>
-                <i class="material-icons right green chip small tooltipped" data-position="top" data-delay="10" data-tooltip="This stock is hot in the media. Time to get that reputation up!">favorite</i>
             </div>
         </div>
         <!-- /Stock attributes -->
