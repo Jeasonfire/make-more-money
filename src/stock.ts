@@ -15,6 +15,8 @@ class Stock {
     /* Stats and info about the stock */
     private name: string = "";
     private price: number = 0;
+    private total_amount: number = 0;
+    private bought_amount: number = 0;
     private can_sell: boolean = false;
     private can_buy: boolean = false;
 
@@ -26,7 +28,8 @@ class Stock {
         $("#stocks").html($("#stocks").html() + html);
 
         this.set_name("Temp Corporation");
-        this.set_price(100);
+        this.set_price(1000);
+        this.set_total_amount(10);
         this.set_can_buy(true);
         this.set_can_sell(false);
         this.add_attribute("price-down");
@@ -44,6 +47,8 @@ class Stock {
 
     public get_name(): string { return this.name; }
     public get_price(): number { return this.price; }
+    public get_total_amount(): number { return this.total_amount; }
+    public get_bought_amount(): number { return this.bought_amount; }
     public get_can_buy(): boolean { return this.can_buy; }
     public get_can_sell(): boolean { return this.can_sell; }
     public get_attributes(): string[] { return this.attributes; }
@@ -60,6 +65,21 @@ class Stock {
 
     public add_price(delta_price: number) {
         this.set_price(this.price + delta_price);
+    }
+
+    public set_total_amount(total_amount: number) {
+        this.total_amount = total_amount;
+        $("#" + this.id + "-total-value").html("" + this.price * this.total_amount);
+        this.set_bought_amount(this.bought_amount);
+    }
+
+    public set_bought_amount(bought_amount: number) {
+        this.bought_amount = bought_amount;
+        $("#" + this.id + "-owned-percent").html("" + Math.round(100 * this.bought_amount / this.total_amount));
+    }
+
+    public add_bought_amount(delta_bought_amount: number) {
+        this.set_bought_amount(this.bought_amount + delta_bought_amount);
     }
 
     public set_can_buy(can_buy: boolean) {
@@ -113,14 +133,14 @@ let StockAttribute = {
 let stock_template_html = `
 <div id="stock-id-stock" class="col s12">
     <!-- Name -->
-    <div class="col s6">
+    <div class="col s4">
         <h5 id="stock-id-name" class="flow-text">The Boop Corporation</h5>
     </div>
     <!-- /Name -->
 
     <!-- Price -->
-    <div class="col s6">
-        <h4 class="flow-text right">$<span id="stock-id-price">100</span></h4>
+    <div class="col s8">
+        <h5 class="flow-text right">Owned: <b><span id="stock-id-owned-percent"></span>%</b> - Value: <b>$<span id="stock-id-total-value"></span></b> ($<span id="stock-id-price"></span> / stock)</h5>
     </div>
     <!-- /Price -->
 

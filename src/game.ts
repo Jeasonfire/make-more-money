@@ -13,16 +13,22 @@ let stocks: Stock[] = [];
 
 
 let update = () => {
-    // Make the stats go up arbitrarily for now
-    money += 1 * Math.max(1, Math.sqrt(money));
-    reputation += 0.25;
-
     // Update stats
     $("#money").html("" + money.toFixed(0));
+    $("#networth").html("" + get_worth().toFixed(0));
+    $("#loans").html("" + loans.toFixed(0));
     $("#rep").html("" + reputation.toFixed(0));
 
     // Keep the loop going, browser!
     requestAnimationFrame(update);
+};
+
+let get_worth = () => {
+    let worth = money - loans;
+    for (let i = 0; i < stocks.length; i++) {
+        worth += stocks[i].get_price() * stocks[i].get_bought_amount();
+    }
+    return worth;
 };
 
 /* Stock utilities */
@@ -38,14 +44,31 @@ let get_stock = (stock_id: number) => {
 let buy_stock = (stock_id: number) => {
     let stock = get_stock(stock_id);
     if (stock !== undefined && stock.get_can_buy()) {
-        Materialize.toast("<span class='flow-text'>Bought <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "rounded cyan");
+        if (money < stock.get_price()) {
+            loans += stock.get_price() - money;
+            money = 0;
+        } else {
+            money -= stock.get_price();
+        }
+        stock.add_bought_amount(1);
+        stock.set_can_sell(true);
+        if (stock.get_bought_amount() >= stock.get_total_amount()) {
+            stock.set_can_buy(false);
+        }
+        Materialize.toast("<span class='flow-text'>Bought <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "cyan");
     }
 };
 
 let sell_stock = (stock_id: number) => {
     let stock = get_stock(stock_id);
     if (stock !== undefined && stock.get_can_sell()) {
-        Materialize.toast("<span class='flow-text'>Sold <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "rounded orange");
+        money += stock.get_price();
+        stock.add_bought_amount(-1);
+        stock.set_can_buy(true);
+        if (stock.get_bought_amount() <= 0) {
+            stock.set_can_sell(false);
+        }
+        Materialize.toast("<span class='flow-text'>Sold <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "orange");
     }
 };
 /* /Stock utilities */
