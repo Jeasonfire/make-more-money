@@ -12,36 +12,68 @@ let reputation: number = 0;
 let stocks: Stock[] = [];
 
 
-let update = () => {
+function update() {
     // Update stats
-    $("#money").html("" + money.toFixed(0));
     $("#networth").html("" + get_worth().toFixed(0));
+    $("#money").html("" + money.toFixed(0));
     $("#loans").html("" + loans.toFixed(0));
-    $("#rep").html("" + reputation.toFixed(0));
+    $("#stockworth").html("" + get_stock_worth().toFixed(0));
+    $("#rep").html(get_reputation_message());
 
     // Keep the loop going, browser!
     requestAnimationFrame(update);
-};
+}
 
-let get_worth = () => {
-    let worth = money - loans;
+/* Reputation */
+function get_reputation_message(): string {
+    if (reputation <= -50) {
+        return "Practically Satan";
+    }
+    if (reputation < 0 && reputation > -50) {
+        return "Bad";
+    }
+    if (reputation > 0 && reputation < 50) {
+        return "Good";
+    }
+    if (reputation >= 50) {
+        return "Practically Jesus";
+    }
+    return "Unknown";
+}
+/* /Reputation */
+
+/* Money utilities */
+function get_worth(): number {
+    return money - loans + get_stock_worth();
+}
+
+function get_stock_worth(): number {
+    let worth = 0;
     for (let i = 0; i < stocks.length; i++) {
         worth += stocks[i].get_price() * stocks[i].get_bought_amount();
     }
     return worth;
-};
+}
+
+function pay_loans(): void {
+    let amount = (loans >= money) ? money : loans;
+    money -= amount;
+    loans -= amount;
+}
+/* /Money utilities */
 
 /* Stock utilities */
-let create_stock = () => {
+function create_stock(): Stock {
     let stock = new Stock();
     stocks[stock.id] = stock;
-};
+    return stock;
+}
 
-let get_stock = (stock_id: number) => {
+function get_stock(stock_id: number): Stock {
     return stocks[stock_id];
-};
+}
 
-let buy_stock = (stock_id: number) => {
+function buy_stock(stock_id: number): void {
     let stock = get_stock(stock_id);
     if (stock !== undefined && stock.get_can_buy()) {
         if (money < stock.get_price()) {
@@ -57,9 +89,9 @@ let buy_stock = (stock_id: number) => {
         }
         Materialize.toast("<span class='flow-text'>Bought <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "cyan");
     }
-};
+}
 
-let sell_stock = (stock_id: number) => {
+function sell_stock(stock_id: number): void {
     let stock = get_stock(stock_id);
     if (stock !== undefined && stock.get_can_sell()) {
         money += stock.get_price();
@@ -70,7 +102,7 @@ let sell_stock = (stock_id: number) => {
         }
         Materialize.toast("<span class='flow-text'>Sold <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "orange");
     }
-};
+}
 /* /Stock utilities */
 
 /* Start the game */

@@ -31,14 +31,15 @@
                 <!-- Stats -->
                 <div class="col s12 m4">
                     <div class="section">
-                        <h4>Cash: <b>$<span id="money"></span></b></h4>
-                        <h4>Loans: <b>$<span id="loans" class="red-text"></span></b></h4>
                         <h4>Net worth: <b>$<span id="networth"></span></b></h4>
-                        <h4>Reputation: <b><span id="rep"></span>% evil</b></h4>
+                        <h5>Cash: <b>$<span id="money"></span></b></h5>
+                        <h5>Loans: <b>$<span id="loans"></span></b></h5>
+                        <h5>Money in stocks: <b>$<span id="stockworth"></span></b></h5>
+                        <h5>Reputation: <b><span id="rep"></span></b></h5>
                     </div>
                     <div class="divider"></div>
                     <div class="section">
-                        <button class="btn waves-effect waves-light cyan">Pay off loans</button>
+                        <button class="btn waves-effect waves-light cyan" onclick="pay_loans()">Pay off loans</button>
                     </div>
                     <div class="divider"></div>
                     <div class="section">
