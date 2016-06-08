@@ -40,13 +40,40 @@
                     <div class="divider"></div>
                     <div class="section">
                         <button class="btn waves-effect waves-light cyan" onclick="pay_loans()">Pay off loans</button>
+                        <button class="btn waves-effect waves-light red" onclick="sell_all_stocks()">Sell all stocks!</button>
                     </div>
                     <div class="divider"></div>
                     <div class="section">
                         <button class="btn waves-effect waves-light cyan disabled">Government bailout<i class="material-icons right">send</i></button>
                     </div>
+                    <div class="divider"></div>
+                    <div class="section">
+                        <h5>Current max investment amount per click: </h5>
+                        <button id="investment-amount-button" class="btn waves-effect waves-light cyan modal-trigger" data-target="investment-amount-modal" onclick="save_old_invest_amount()">$2500</button>
+                    </div>
                 </div>
                 <!-- /Stats -->
+
+                <!-- Modals ("popups") -->
+                <div>
+                    <div id="investment-amount-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="input-field">
+                                <h5>Investment ($) per click</h5>
+                                <input value="2500" id="investment-amount" type="text">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col s6 left">
+                                <button class="btn waves-effect waves-light cyan modal-close right" onclick="update_investment_amount()">Apply</button>
+                            </div>
+                            <div class="col s6 right">
+                                <button class="btn waves-effect waves-light modal-close left" onclick="load_old_invest_amount()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Modals ("popups") -->
 
             </div>
         </div>

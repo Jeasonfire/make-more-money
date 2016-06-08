@@ -31,6 +31,7 @@ class Stock {
         this.id = Stock.used_ids++;
         let html = stock_template_html.replace(/stock-id/g, "" + this.id);
         $("#stocks").html($("#stocks").html() + html);
+        $(".tooltipped").tooltip({delay: 50});
 
         this.price_change_range = this.new_price_change_range();
         this.price_change_per_second = this.new_price_change_per_second();
@@ -42,6 +43,15 @@ class Stock {
         this.set_total_amount(10);
         this.set_can_buy(true);
         this.set_can_sell(false);
+
+        /* Random starting attributes */
+        if (Math.random() < 0.3) {
+            if (Math.random() < 0.5) {
+                this.add_attribute("reputation-up");
+            } else {
+                this.add_attribute("reputation-down");
+            }
+        }
     }
 
     private new_price_change_range(): number {
@@ -49,7 +59,15 @@ class Stock {
     }
 
     private new_price_change_per_second(): number {
-        return this.price_change_range * (Math.random() * 2 - 1);
+        let change = (Math.random() * 2 - 1);
+        if (change < -0.8 && this.has_attribute("reputation-up") && Math.random() < 0.9) {
+            change *= 1.25;
+            Materialize.toast(this.get_shortened_name() + " is having major money problems!", 3000, "red");
+        }
+        if (change < 0 && this.has_attribute("reputation-down") && this.has_attribute("price-up")) {
+            change += 0.2;
+        }
+        return this.price_change_range * change;
     }
 
     private new_price_change_volatility(): number {
@@ -92,6 +110,7 @@ class Stock {
     }
 
     public remove() {
+        $(".tooltipped").tooltip("remove");
         $("#" + this.id + "-stock").remove();
     }
 
@@ -106,6 +125,7 @@ class Stock {
     public get_can_buy(): boolean { return this.can_buy; }
     public get_can_sell(): boolean { return this.can_sell; }
     public get_attributes(): string[] { return this.attributes; }
+    public has_attribute(attribute: string) { return this.attributes.indexOf(attribute) !== -1; }
 
     public set_name(name: string) {
         this.name = name;
@@ -150,7 +170,8 @@ class Stock {
     public add_attribute(attribute: string) {
         if (this.attributes.indexOf(attribute) === -1) {
             this.attributes.push(attribute);
-            $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-" + attribute + "' class='material-icons right chip small tooltipped " + StockAttribute[attribute][1] + "' data-position='top' data-delay='10' data-tooltip='" + StockAttribute[attribute][2] + "'>" + StockAttribute[attribute][0] + "</i>");
+            $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-attribute-" + attribute + "' class='material-icons right chip small tooltipped " + StockAttribute[attribute][1] + "' data-position='top' data-delay='50' data-tooltip='" + StockAttribute[attribute][2] + "'>" + StockAttribute[attribute][0] + "</i>");
+            $(".tooltipped").tooltip({delay: 50});
         }
     }
 
@@ -158,7 +179,8 @@ class Stock {
         let index = this.attributes.indexOf(attribute);
         if (index !== -1) {
             this.attributes.splice(index, 1);
-            $("#" + this.id + "-" + attribute).remove();
+            $(".tooltipped").tooltip("remove");
+            $("#" + this.id + "-attribute-" + attribute).remove();
         }
     }
 
@@ -196,10 +218,10 @@ let stock_template_html = `
         <!-- Buying and selling -->
         <div class="col s12 m4">
             <div>
-                <a id="stock-id-sell" class="btn-floating btn-medium waves-effect waves-light orange tooltipped" data-position="top" data-delay="10" data-tooltip="Sell" onclick="sell_stock(stock-id)">
+                <a id="stock-id-sell" class="btn-floating btn-medium waves-effect waves-light orange tooltipped" data-position="top" data-delay="50" data-tooltip="Sell" onclick="sell_stock(get_stock(stock-id))">
                     <i class="material-icons">remove</i>
                 </a>
-                <a id="stock-id-buy" class="btn-floating btn-medium waves-effect waves-light cyan tooltipped" data-position="top" data-delay="10" data-tooltip="Buy" onclick="buy_stock(stock-id)">
+                <a id="stock-id-buy" class="btn-floating btn-medium waves-effect waves-light cyan tooltipped" data-position="top" data-delay="50" data-tooltip="Buy" onclick="buy_stock(get_stock(stock-id))">
                     <i class="material-icons">add</i>
                 </a>
             </div>

@@ -11,6 +11,7 @@ let loans: number = 0;
 let reputation: number = 0;
 let stocks: Stock[] = [];
 let target_stocks_amount: number = 5;
+let investment_amount: number = $("#investment-amount").val();
 
 function update() {
     /* Update timer */
@@ -18,14 +19,13 @@ function update() {
 
     /* Update stocks */
     for (let i = 0; i < stocks.length; i++) {
-        if (stocks[i] === undefined) {
-            continue;
-        }
-        stocks[i].update(delta_time);
-        if (stocks[i].get_price() <= 0) {
-            Materialize.toast(stocks[i].get_name() + " is now bankrupt!", 5000, "red");
-            stocks[i].remove();
-            stocks.splice(i, 1);
+        if (stocks[i] !== undefined) {
+            stocks[i].update(delta_time);
+            if (stocks[i].get_price() <= 0) {
+                Materialize.toast(stocks[i].get_name() + " is now bankrupt!", 5000, "red");
+                stocks[i].remove();
+                stocks.splice(i, 1);
+            }
         }
     }
 
@@ -71,18 +71,38 @@ function get_worth(): number {
 function get_stock_worth(): number {
     let worth = 0;
     for (let i = 0; i < stocks.length; i++) {
-        if (stocks[i] === undefined) {
-            continue;
+        if (stocks[i] !== undefined) {
+            worth += stocks[i].get_price() * stocks[i].get_bought_amount();
         }
-        worth += stocks[i].get_price() * stocks[i].get_bought_amount();
     }
     return worth;
 }
 
-function pay_loans(): void {
+function pay_loans() {
     let amount = (loans >= money) ? money : loans;
     money -= amount;
     loans -= amount;
+}
+
+let old_invest_amount = 0;
+function save_old_invest_amount() {
+    old_invest_amount = $("#investment-amount").val();
+}
+function load_old_invest_amount() {
+    $("#investment-amount").val(old_invest_amount);
+}
+
+function update_investment_amount() {
+    let value_str = $("#investment-amount").val();
+    let value = parseInt(value_str.replace(/ /g, ""));
+    if (value !== undefined && !isNaN(value)) {
+        $("#investment-amount-button").html("$" + value_str);
+        investment_amount = value;
+        console.log(value);
+    } else {
+        load_old_invest_amount();
+        Materialize.toast("Type numbers in there!", 5000);
+    }
 }
 /* /Money utilities */
 
@@ -102,8 +122,14 @@ function get_stock(stock_id: number): Stock {
     return null;
 }
 
-function buy_stock(stock_id: number): void {
-    let stock = get_stock(stock_id);
+function buy_stock(stock: Stock) {
+    let amount = Math.floor(investment_amount / stock.get_price());
+    for (let i = 0; i < amount; i++) {
+        buy_one_stock(stock);
+    }
+}
+
+function buy_one_stock(stock: Stock) {
     if (stock !== undefined && stock.get_can_buy()) {
         if (money < stock.get_price()) {
             loans += stock.get_price() - money;
@@ -116,12 +142,17 @@ function buy_stock(stock_id: number): void {
         if (stock.get_bought_amount() >= stock.get_total_amount()) {
             stock.set_can_buy(false);
         }
-        Materialize.toast("<span class='flow-text'>Bought <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "cyan");
     }
 }
 
-function sell_stock(stock_id: number): void {
-    let stock = get_stock(stock_id);
+function sell_stock(stock: Stock) {
+    let amount = Math.ceil(investment_amount / stock.get_price());
+    for (let i = 0; i < amount; i++) {
+        sell_one_stock(stock);
+    }
+}
+
+function sell_one_stock(stock: Stock) {
     if (stock !== undefined && stock.get_can_sell()) {
         money += stock.get_price();
         stock.set_bought_amount(stock.get_bought_amount() - 1);
@@ -129,11 +160,25 @@ function sell_stock(stock_id: number): void {
         if (stock.get_bought_amount() <= 0) {
             stock.set_can_sell(false);
         }
-        Materialize.toast("<span class='flow-text'>Sold <b>" + get_stock(stock_id).get_shortened_name() + "</b> stock!</span>", 1000, "orange");
+    }
+}
+
+function sell_all_stocks() {
+    for (let i = 0; i < stocks.length; i++) {
+        if (stocks[i] !== undefined) {
+            let stock_amt = stocks[i].get_bought_amount();
+            for (let j = 0; j < stock_amt; j++) {
+                sell_stock(stocks[i]);
+            }
+        }
     }
 }
 /* /Stock utilities */
 
 /* Start the game */
-create_stock();
-update();
+$(document).ready(() => {
+    $(".modal-trigger").leanModal();
+
+    create_stock();
+    update();
+});
