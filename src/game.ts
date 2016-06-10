@@ -6,6 +6,9 @@
  * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
+let MONEY_TO_GOOD_REP_MULTIPLIER = 1.0 / 1000.0;
+let MONEY_TO_BAD_REP_MULTIPLIER = 1.0 / 500.0;
+
 let money: number = 0;
 let loans: number = 0;
 let reputation: number = 0;
@@ -98,11 +101,15 @@ function update_investment_amount() {
     if (value !== undefined && !isNaN(value)) {
         $("#investment-amount-button").html("$" + value_str);
         investment_amount = value;
-        console.log(value);
     } else {
         load_old_invest_amount();
         Materialize.toast("Type numbers in there!", 5000);
     }
+}
+
+function bailout() {
+    this.reputation -= loans * MONEY_TO_BAD_REP_MULTIPLIER;
+    this.loans = 0;
 }
 /* /Money utilities */
 
@@ -124,6 +131,9 @@ function get_stock(stock_id: number): Stock {
 
 function buy_stock(stock: Stock) {
     let amount = Math.floor(investment_amount / stock.get_price());
+    if (amount === 0) {
+        Materialize.toast("Your max investment is too low!", 5000, "red");
+    }
     for (let i = 0; i < amount; i++) {
         buy_one_stock(stock);
     }
@@ -131,17 +141,31 @@ function buy_stock(stock: Stock) {
 
 function buy_one_stock(stock: Stock) {
     if (stock !== undefined && stock.get_can_buy()) {
+        /* Take money */
         if (money < stock.get_price()) {
             loans += stock.get_price() - money;
             money = 0;
         } else {
             money -= stock.get_price();
         }
+        /* /Take money */
+
+        /* Update reputation */
+        if (stock.has_attribute("reputation-up")) {
+            reputation += stock.get_price() * MONEY_TO_GOOD_REP_MULTIPLIER;
+        }
+        if (stock.has_attribute("reputation-down")) {
+            reputation -= stock.get_price() * MONEY_TO_BAD_REP_MULTIPLIER;
+        }
+        /* /Update reputation */
+
+        /* Update stock infos */
         stock.set_bought_amount(stock.get_bought_amount() + 1);
         stock.set_can_sell(true);
         if (stock.get_bought_amount() >= stock.get_total_amount()) {
             stock.set_can_buy(false);
         }
+        /* /Update stock infos */
     }
 }
 

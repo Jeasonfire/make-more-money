@@ -40,7 +40,7 @@ class Stock {
 
         this.set_name(Generator.generate_name());
         this.set_price(1000);
-        this.set_total_amount(10);
+        this.set_total_amount(100);
         this.set_can_buy(true);
         this.set_can_sell(false);
 
@@ -75,7 +75,7 @@ class Stock {
     }
 
     private new_price_change_time(): number {
-        return Date.now() + this.price_change_volatility * 5000;
+        return Date.now() + this.price_change_volatility * 10000;
     }
 
     public update(delta_time: number) {
@@ -107,6 +107,24 @@ class Stock {
             }
         }
         /* /Price changing attribs */
+        /* Reputation changing  attributes */
+        if (Math.random() < 0.1 * delta_time) {
+            if (!this.has_attribute("reputation-up") && !this.has_attribute("reputation-down")) {
+                if (Math.random() < 0.5) {
+                    this.add_attribute("reputation-up");
+                } else {
+                    this.add_attribute("reputation-down");
+                }
+            } else {
+                if (this.has_attribute("reputation-up") && Math.random() < 0.8) {
+                    this.remove_attribute("reputation-up");
+                }
+                if (this.has_attribute("reputation-down") && Math.random() < 0.7) {
+                    this.remove_attribute("reputation-down");
+                }
+            }
+        }
+        /* /Reputation changing  attributes */
     }
 
     public remove() {
@@ -171,7 +189,7 @@ class Stock {
         if (this.attributes.indexOf(attribute) === -1) {
             this.attributes.push(attribute);
             $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-attribute-" + attribute + "' class='material-icons right chip small tooltipped " + StockAttribute[attribute][1] + "' data-position='top' data-delay='50' data-tooltip='" + StockAttribute[attribute][2] + "'>" + StockAttribute[attribute][0] + "</i>");
-            $(".tooltipped").tooltip({delay: 50});
+            $("#" + this.id + "-attribute-" + attribute).tooltip({delay: 50});
         }
     }
 
@@ -179,7 +197,7 @@ class Stock {
         let index = this.attributes.indexOf(attribute);
         if (index !== -1) {
             this.attributes.splice(index, 1);
-            $(".tooltipped").tooltip("remove");
+            $("#" + this.id + "-attribute-" + attribute).tooltip("remove");
             $("#" + this.id + "-attribute-" + attribute).remove();
         }
     }
@@ -192,7 +210,7 @@ class Stock {
 }
 
 let StockAttribute = {
-    "reputation-up": ["favorite", "green", "This company is doing something charitable!"],
+    "reputation-up": ["thumb_up", "green", "This company is doing something charitable!"],
     "reputation-down": ["thumb_down", "red", "This company is doing something unethical!"],
     "price-up": ["trending_up", "cyan", "This stock is going up!"],
     "price-stable": ["trending_flat", "", "This stock is stagnating."],
@@ -218,10 +236,10 @@ let stock_template_html = `
         <!-- Buying and selling -->
         <div class="col s12 m4">
             <div>
-                <a id="stock-id-sell" class="btn-floating btn-medium waves-effect waves-light orange tooltipped" data-position="top" data-delay="50" data-tooltip="Sell" onclick="sell_stock(get_stock(stock-id))">
+                <a id="stock-id-sell" class="btn-floating btn-medium orange" onclick="sell_stock(get_stock(stock-id))">
                     <i class="material-icons">remove</i>
                 </a>
-                <a id="stock-id-buy" class="btn-floating btn-medium waves-effect waves-light cyan tooltipped" data-position="top" data-delay="50" data-tooltip="Buy" onclick="buy_stock(get_stock(stock-id))">
+                <a id="stock-id-buy" class="btn-floating btn-medium cyan" onclick="buy_stock(get_stock(stock-id))">
                     <i class="material-icons">add</i>
                 </a>
             </div>

@@ -44,11 +44,11 @@
                     </div>
                     <div class="divider"></div>
                     <div class="section">
-                        <button class="btn waves-effect waves-light cyan disabled">Government bailout<i class="material-icons right">send</i></button>
+                        <button class="btn waves-effect waves-light cyan tooltipped" data-position="bot" data-delay="50" data-tooltip="Get the government to pay off your loans for a reputation hit." onclick="bailout()">Government bailout<i class="material-icons right">send</i></button>
                     </div>
                     <div class="divider"></div>
                     <div class="section">
-                        <h5>Current max investment amount per click: </h5>
+                        <h5>Current <b class="tooltipped" data-position="top" data-delay="50" data-tooltip="The amount of money that will be spent on a company when you press the 'plus' button." onclick="bailout()">max investment amount</b> per click: </h5>
                         <button id="investment-amount-button" class="btn waves-effect waves-light cyan modal-trigger" data-target="investment-amount-modal" onclick="save_old_invest_amount()">$2500</button>
                     </div>
                 </div>
