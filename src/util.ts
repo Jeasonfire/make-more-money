@@ -6,7 +6,7 @@
  * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-class Generator {
+class Util {
     private static names: string[] = [
         "Apple", "Orange", "Cherry", "Cranberry", "Grape", "Pear",
         "Pomegranate", "Raspberry", "Strawberry", "Melon", "Pepper",
@@ -18,7 +18,7 @@ class Generator {
     private static nametypes: string[] = ["Co.", "Corp.", "Inc.", "Ltd."];
 
     public static generate_name(): string {
-        return Generator.names[Math.floor(Generator.names.length * Math.random())] + " " +
-                Generator.nametypes[Math.floor(Generator.nametypes.length * Math.random())];
+        return Util.names[Math.floor(Util.names.length * Math.random())] + " " +
+                Util.nametypes[Math.floor(Util.nametypes.length * Math.random())];
     }
 }

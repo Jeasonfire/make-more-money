@@ -31,14 +31,13 @@ class Stock {
         this.id = Stock.used_ids++;
         let html = stock_template_html.replace(/stock-id/g, "" + this.id);
         $("#stocks").html($("#stocks").html() + html);
-        $(".tooltipped").tooltip({delay: 50});
 
         this.price_change_range = this.new_price_change_range();
         this.price_change_per_second = this.new_price_change_per_second();
         this.price_change_volatility = this.new_price_change_volatility();
         this.price_change_time = this.new_price_change_time();
 
-        this.set_name(Generator.generate_name());
+        this.set_name(Util.generate_name());
         this.set_price(1000);
         this.set_total_amount(100);
         this.set_can_buy(true);
@@ -61,7 +60,7 @@ class Stock {
     private new_price_change_per_second(): number {
         let change = (Math.random() * 2 - 1);
         if (change < -0.8 && this.has_attribute("reputation-up") && Math.random() < 0.9) {
-            change *= 1.25;
+            change *= 3;
             Materialize.toast(this.get_shortened_name() + " is having major money problems!", 3000, "red");
         }
         if (change < 0 && this.has_attribute("reputation-down") && this.has_attribute("price-up")) {
@@ -128,7 +127,6 @@ class Stock {
     }
 
     public remove() {
-        $(".tooltipped").tooltip("remove");
         $("#" + this.id + "-stock").remove();
     }
 
@@ -188,8 +186,7 @@ class Stock {
     public add_attribute(attribute: string) {
         if (this.attributes.indexOf(attribute) === -1) {
             this.attributes.push(attribute);
-            $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-attribute-" + attribute + "' class='material-icons right chip small tooltipped " + StockAttribute[attribute][1] + "' data-position='top' data-delay='50' data-tooltip='" + StockAttribute[attribute][2] + "'>" + StockAttribute[attribute][0] + "</i>");
-            $("#" + this.id + "-attribute-" + attribute).tooltip({delay: 50});
+            $("#" + this.id + "-attributes").html($("#" + this.id + "-attributes").html() + "<i id='" + this.id + "-attribute-" + attribute + "' class='material-icons right chip small " + StockAttribute[attribute][1] + "'>" + StockAttribute[attribute][0] + "</i>");
         }
     }
 
@@ -197,7 +194,6 @@ class Stock {
         let index = this.attributes.indexOf(attribute);
         if (index !== -1) {
             this.attributes.splice(index, 1);
-            $("#" + this.id + "-attribute-" + attribute).tooltip("remove");
             $("#" + this.id + "-attribute-" + attribute).remove();
         }
     }

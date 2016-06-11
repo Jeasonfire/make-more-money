@@ -6,8 +6,11 @@
  * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
-let MONEY_TO_GOOD_REP_MULTIPLIER = 1.0 / 1000.0;
-let MONEY_TO_BAD_REP_MULTIPLIER = 1.0 / 500.0;
+let REP_TABLE: string[] = ["Dark Souls of Investors", "Incarnation of Evil",
+        "Practically Satan", "Literally Hitler", "Evil", "Hated", "Very Bad",
+        "Bad", "Disliked", "Unpleasant", "Unknown", "Nice", "Liked", "Good",
+        "Very Good", "Loved", "Saint", "Pope?", "Practically Jesus", "Incarnation of Good",
+        "Bernie Sanders, apparently"];
 
 let money: number = 0;
 let loans: number = 0;
@@ -16,9 +19,12 @@ let stocks: Stock[] = [];
 let target_stocks_amount: number = 5;
 let investment_amount: number = $("#investment-amount").val();
 
+let last_time = Date.now();
 function update() {
     /* Update timer */
-    let delta_time = 0.016;
+    let now_time = Date.now();
+    let delta_time = (now_time - last_time) / 1000.0;
+    last_time = now_time;
 
     /* Update stocks */
     for (let i = 0; i < stocks.length; i++) {
@@ -32,6 +38,15 @@ function update() {
         }
     }
 
+    /* Update background */
+    let scaledRep = (Math.min(Math.pow(Math.abs(reputation), 0.8), 10) / 10);
+    if (reputation < 0) {
+        $("body").css("background-color", "rgb(255, " + Math.round(255 - 50 * scaledRep) + ", " + Math.round(255 - 50 * scaledRep) + ")");
+    }
+    if (reputation > 0) {
+        $("body").css("background-color", "rgb(" + Math.round(255 - 50 * scaledRep) + ", 255, 255)");
+    }
+
     /* New stocks if there aren't enough of them! */
     if ((target_stocks_amount - stocks.length) * Math.random() > 0.9) {
         create_stock();
@@ -43,26 +58,17 @@ function update() {
     $("#loans").html("" + loans.toFixed(0));
     $("#stockworth").html("" + get_stock_worth().toFixed(0));
     $("#rep").html(get_reputation_message());
-
-    /* Keep the loop going, browser! */
-    requestAnimationFrame(update);
 }
 
 /* Reputation */
 function get_reputation_message(): string {
-    if (reputation <= -50) {
-        return "Practically Satan";
+    let rep = Math.round(Math.min(10, Math.pow(Math.abs(reputation), 0.8)));
+    if (reputation < 0) {
+        rep = 10 - rep;
+    } else {
+        rep += 10;
     }
-    if (reputation < 0 && reputation > -50) {
-        return "Bad";
-    }
-    if (reputation > 0 && reputation < 50) {
-        return "Good";
-    }
-    if (reputation >= 50) {
-        return "Practically Jesus";
-    }
-    return "Unknown";
+    return REP_TABLE[rep];
 }
 /* /Reputation */
 
@@ -108,7 +114,7 @@ function update_investment_amount() {
 }
 
 function bailout() {
-    this.reputation -= loans * MONEY_TO_BAD_REP_MULTIPLIER;
+    this.reputation -= Math.sqrt(loans) / 50;
     this.loans = 0;
 }
 /* /Money utilities */
@@ -152,10 +158,10 @@ function buy_one_stock(stock: Stock) {
 
         /* Update reputation */
         if (stock.has_attribute("reputation-up")) {
-            reputation += stock.get_price() * MONEY_TO_GOOD_REP_MULTIPLIER;
+            reputation += (1.0 / stock.get_total_amount());
         }
         if (stock.has_attribute("reputation-down")) {
-            reputation -= stock.get_price() * MONEY_TO_BAD_REP_MULTIPLIER;
+            reputation -= (1.0 / stock.get_total_amount());
         }
         /* /Update reputation */
 
@@ -204,5 +210,5 @@ $(document).ready(() => {
     $(".modal-trigger").leanModal();
 
     create_stock();
-    update();
+    setInterval(update, 33);
 });

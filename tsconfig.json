@@ -9,8 +9,8 @@
 		"./lib/jquery.d.ts",
 		"./lib/materialize-css.d.ts",
 		"./src/game.ts",
-		"./src/generator.ts",
-		"./src/stock.ts"
+		"./src/stock.ts",
+		"./src/util.ts"
 	],
 	"atom": {
 		"rewriteTsconfig": true
