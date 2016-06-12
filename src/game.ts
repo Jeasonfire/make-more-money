@@ -8,21 +8,22 @@
 
  /*
  * TODO:
- * - Interest for loans
+ * - Options menu + Main menu + Intro?
  * - Penalty for being invested in a company that goes bankrupt
  * - Trusted-stat (and more trust/reputation titles)
  * - Buying/selling affecting the price of things (at least by trust)
  */
 
-let REP_TABLE: string[] = ["Dark Souls of Investors", "Incarnation of Evil",
+let REP_TABLE: string[] = ["Martin Shkreli", "Incarnation of Evil",
         "Practically Satan", "Literally Hitler", "Evil", "Hated", "Very Bad",
         "Bad", "Disliked", "Unpleasant", "Unknown", "Nice", "Liked", "Good",
-        "Very Good", "Loved", "Saint", "Pope?", "Practically Jesus", "Incarnation of Good",
-        "Bernie Sanders, apparently"];
+        "Very Good", "Loved", "Saint", "Pope?", "Practically Jesus",
+        "Incarnation of Good", "Bernie Sanders"];
 
 let money: number = 0;
 let loans: number = 0;
 let reputation: number = 0;
+let trusted: number = 0;
 let stocks: Stock[] = [];
 let target_stocks_amount: number = 0;
 let target_stocks_amount_change_time: number = 0;
@@ -51,12 +52,20 @@ function update() {
     loans += loans * 0.01 * delta_time;
 
     /* Update background */
-    let scaledRep = (Math.min(Math.pow(Math.abs(reputation), 0.8), 10) / 10);
+    let scaledRep = (get_reputation_scaled() / 10);
     if (reputation < 0) {
         $("body").css("background-color", "rgb(255, " + Math.round(255 - 50 * scaledRep) + ", " + Math.round(255 - 50 * scaledRep) + ")");
     }
     if (reputation > 0) {
         $("body").css("background-color", "rgb(" + Math.round(255 - 50 * scaledRep) + ", 255, 255)");
+    }
+
+    /* Update bailout button */
+    if (loans > get_market_worth() && $("#bailout").hasClass("disabled")) {
+        $("#bailout").removeClass("disabled");
+    }
+    if (loans <= get_market_worth() && !$("#bailout").hasClass("disabled")) {
+        $("#bailout").addClass("disabled");
     }
 
     /* New stocks if there aren't enough of them! */
@@ -78,13 +87,21 @@ function update() {
 
 /* Reputation */
 function get_reputation_message(): string {
-    let rep = Math.round(Math.min(10, Math.pow(Math.abs(reputation), 0.8)));
+    let rep = Math.round(get_reputation_scaled());
     if (reputation < 0) {
         rep = 10 - rep;
     } else {
         rep += 10;
     }
     return REP_TABLE[rep];
+}
+
+function get_reputation_scaled(): number {
+    return Math.min(10, Math.pow(Math.abs(reputation), 0.8));
+}
+
+function get_trusted_scaled(): number {
+    return Math.min(10, Math.pow(Math.abs(trusted), 0.9));
 }
 /* /Reputation */
 
@@ -101,6 +118,26 @@ function get_stock_worth(): number {
         }
     }
     return worth;
+}
+
+function get_market_worth(): number {
+    let worth = 0;
+    for (let i = 0; i < stocks.length; i++) {
+        if (stocks[i] !== undefined) {
+            worth += stocks[i].get_price() * stocks[i].get_total_amount();
+        }
+    }
+    return worth;
+}
+
+function get_max_loans(): number {
+    let scaled_trusted = get_trusted_scaled();
+    if (trusted < 0) {
+        scaled_trusted = 10 - scaled_trusted;
+    } else {
+        scaled_trusted += 10;
+    }
+    return (get_worth() + 10000) * (scaled_trusted / 20 * 1.5 + 0.25);
 }
 
 function pay_loans() {
@@ -130,8 +167,10 @@ function update_investment_amount() {
 }
 
 function bailout() {
-    this.reputation -= Math.sqrt(loans) / 50;
-    this.loans = 0;
+    if (loans > get_market_worth()) {
+        this.reputation -= Math.sqrt(loans) / 50;
+        this.loans = 0;
+    }
 }
 /* /Money utilities */
 
@@ -151,71 +190,52 @@ function get_stock(stock_id: number): Stock {
     return null;
 }
 
-function buy_stock(stock: Stock) {
-    let amount = Math.floor(investment_amount / stock.get_price());
-    if (amount === 0) {
-        Materialize.toast("Your max investment is too low!", 5000, "red");
+function buy_stock(stock: Stock, amount: number = -1) {
+    if (amount === -1) {
+        amount = Math.floor(investment_amount / stock.get_price());
+        if (amount === 0) {
+            Materialize.toast("Your max investment is too low!", 5000, "red");
+        }
     }
-    for (let i = 0; i < amount; i++) {
-        buy_one_stock(stock);
+    amount = Util.clamp(amount, 0, stock.get_total_amount() - stock.get_bought_amount());
+    let total_price = amount * stock.get_price();
+
+    /* Take money */
+    if (money < total_price) {
+        loans += total_price - money;
+        money = 0;
+    } else {
+        money -= total_price;
     }
+    /* /Take money */
+
+    /* Update reputation */
+    if (stock.has_attribute("reputation-up")) {
+        reputation += (amount / stock.get_total_amount());
+    }
+    if (stock.has_attribute("reputation-down")) {
+        reputation -= (amount / stock.get_total_amount());
+    }
+    /* /Update reputation */
+
+    /* Update stock infos */
+    stock.set_bought_amount(stock.get_bought_amount() + amount);
+    stock.set_can_buy_and_sell_auto();
+    /* /Update stock infos */
 }
 
-function buy_one_stock(stock: Stock) {
-    if (stock !== undefined && stock.get_can_buy()) {
-        /* Take money */
-        if (money < stock.get_price()) {
-            loans += stock.get_price() - money;
-            money = 0;
-        } else {
-            money -= stock.get_price();
-        }
-        /* /Take money */
+function sell_stock(stock: Stock, amount: number = Math.ceil(investment_amount / stock.get_price())) {
+    amount = Util.clamp(amount, 0, stock.get_bought_amount());
 
-        /* Update reputation */
-        if (stock.has_attribute("reputation-up")) {
-            reputation += (1.0 / stock.get_total_amount());
-        }
-        if (stock.has_attribute("reputation-down")) {
-            reputation -= (1.0 / stock.get_total_amount());
-        }
-        /* /Update reputation */
-
-        /* Update stock infos */
-        stock.set_bought_amount(stock.get_bought_amount() + 1);
-        stock.set_can_sell(true);
-        if (stock.get_bought_amount() >= stock.get_total_amount()) {
-            stock.set_can_buy(false);
-        }
-        /* /Update stock infos */
-    }
-}
-
-function sell_stock(stock: Stock) {
-    let amount = Math.ceil(investment_amount / stock.get_price());
-    for (let i = 0; i < amount; i++) {
-        sell_one_stock(stock);
-    }
-}
-
-function sell_one_stock(stock: Stock) {
-    if (stock !== undefined && stock.get_can_sell()) {
-        money += stock.get_price();
-        stock.set_bought_amount(stock.get_bought_amount() - 1);
-        stock.set_can_buy(true);
-        if (stock.get_bought_amount() <= 0) {
-            stock.set_can_sell(false);
-        }
-    }
+    money += stock.get_price() * amount;
+    stock.set_bought_amount(stock.get_bought_amount() - amount);
+    stock.set_can_buy_and_sell_auto();
 }
 
 function sell_all_stocks() {
     for (let i = 0; i < stocks.length; i++) {
         if (stocks[i] !== undefined) {
-            let stock_amt = stocks[i].get_bought_amount();
-            for (let j = 0; j < stock_amt; j++) {
-                sell_stock(stocks[i]);
-            }
+            sell_stock(stocks[i], stocks[i].get_bought_amount());
         }
     }
 }

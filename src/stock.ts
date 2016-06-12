@@ -183,6 +183,11 @@ class Stock {
         }
     }
 
+    public set_can_buy_and_sell_auto() {
+        this.set_can_buy(this.get_total_amount() > this.get_bought_amount());
+        this.set_can_sell(this.get_bought_amount() > 0);
+    }
+
     public add_attribute(attribute: string) {
         if (this.attributes.indexOf(attribute) === -1) {
             this.attributes.push(attribute);

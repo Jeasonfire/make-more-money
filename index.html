@@ -33,7 +33,7 @@
                     <div class="section">
                         <h4>Net worth: <b id="networth"></b></h4>
                         <h5>Cash: <b id="money"></b></h5>
-                        <h5>Loans: <b id="loans" class="tooltipped" data-position="right" data-delay="10" data-tooltip="10% interest per minute"></b></h5>
+                        <h5>Loans: <b id="loans" class="tooltipped" data-position="right" data-delay="10" data-tooltip="1% interest per second"></b></h5>
                         <h5>Money in stocks: <b id="stockworth"></b></h5>
                         <h5>Reputation: <b id="rep"></b></h5>
                     </div>
@@ -44,7 +44,7 @@
                     </div>
                     <div class="divider"></div>
                     <div class="section">
-                        <button class="btn waves-effect waves-light cyan tooltipped" data-position="bot" data-delay="10" data-tooltip="Get the government to pay off your loans for a reputation hit." onclick="bailout()">Government bailout<i class="material-icons right">send</i></button>
+                        <button id="bailout" class="btn waves-effect waves-light cyan tooltipped" data-position="bot" data-delay="10" data-tooltip="Get the government to pay off your loans. You need to have more loans than there is money in the market." onclick="bailout()">Government bailout<i class="material-icons right">send</i></button>
                     </div>
                     <div class="divider"></div>
                     <div class="section">
