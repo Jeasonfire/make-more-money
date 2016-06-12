@@ -6,6 +6,14 @@
  * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
 
+ /*
+ * TODO:
+ * - Interest for loans
+ * - Penalty for being invested in a company that goes bankrupt
+ * - Trusted-stat (and more trust/reputation titles)
+ * - Buying/selling affecting the price of things (at least by trust)
+ */
+
 let REP_TABLE: string[] = ["Dark Souls of Investors", "Incarnation of Evil",
         "Practically Satan", "Literally Hitler", "Evil", "Hated", "Very Bad",
         "Bad", "Disliked", "Unpleasant", "Unknown", "Nice", "Liked", "Good",
@@ -16,7 +24,8 @@ let money: number = 0;
 let loans: number = 0;
 let reputation: number = 0;
 let stocks: Stock[] = [];
-let target_stocks_amount: number = 5;
+let target_stocks_amount: number = 0;
+let target_stocks_amount_change_time: number = 0;
 let investment_amount: number = $("#investment-amount").val();
 
 let last_time = Date.now();
@@ -48,15 +57,19 @@ function update() {
     }
 
     /* New stocks if there aren't enough of them! */
+    if (target_stocks_amount_change_time < Date.now()) {
+        target_stocks_amount_change_time = Date.now() + 1000 * (10 + Math.pow(3, target_stocks_amount));
+        target_stocks_amount++;
+    }
     if ((target_stocks_amount - stocks.length) * Math.random() > 0.9) {
         create_stock();
     }
 
     /* Update stats */
-    $("#networth").html("" + get_worth().toFixed(0));
-    $("#money").html("" + money.toFixed(0));
-    $("#loans").html("" + loans.toFixed(0));
-    $("#stockworth").html("" + get_stock_worth().toFixed(0));
+    $("#networth").html(Util.get_money_formatted(get_worth()));
+    $("#money").html(Util.get_money_formatted(money));
+    $("#loans").html(Util.get_money_formatted(loans));
+    $("#stockworth").html(Util.get_money_formatted(get_stock_worth()));
     $("#rep").html(get_reputation_message());
 }
 
@@ -210,5 +223,5 @@ $(document).ready(() => {
     $(".modal-trigger").leanModal();
 
     create_stock();
-    setInterval(update, 33);
+    setInterval(update, 1000 / 60);
 });

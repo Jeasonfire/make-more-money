@@ -39,7 +39,7 @@ class Stock {
 
         this.set_name(Util.generate_name());
         this.set_price(1000);
-        this.set_total_amount(100);
+        this.set_total_amount(Math.floor(Math.max(5, Math.random() * Math.pow(100, Math.floor(Math.random() * 3)))));
         this.set_can_buy(true);
         this.set_can_sell(false);
 
@@ -150,13 +150,13 @@ class Stock {
 
     public set_price(price: number) {
         this.price = price;
-        $("#" + this.id + "-price").html((this.price / 1000).toFixed(1) + "k");
+        $("#" + this.id + "-price").html(Util.get_money_formatted(this.price));
         this.set_total_amount(this.total_amount);
     }
 
     public set_total_amount(total_amount: number) {
         this.total_amount = total_amount;
-        $("#" + this.id + "-total-value").html((this.price * this.total_amount / 1000).toFixed(1) + "k");
+        $("#" + this.id + "-total-value").html(Util.get_money_formatted(this.price * this.total_amount));
         this.set_bought_amount(this.bought_amount);
     }
 
@@ -223,7 +223,7 @@ let stock_template_html = `
 
     <!-- Price -->
     <div class="col s8">
-        <h5 class="flow-text right">Owned: <b><span id="stock-id-owned-percent"></span>%</b> - Value: <b>$<span id="stock-id-total-value"></span></b> ($<span id="stock-id-price"></span> / stock)</h5>
+        <h5 class="flow-text right">Owned: <b><span id="stock-id-owned-percent"></span>%</b> - Value: <b><span id="stock-id-total-value"></span></b> (<span id="stock-id-price"></span> / stock)</h5>
     </div>
     <!-- /Price -->
 
