@@ -19,6 +19,8 @@ let REP_TABLE: string[] = ["Martin Shkreli", "Incarnation of Evil",
         "Bad", "Disliked", "Unpleasant", "Unknown", "Nice", "Liked", "Good",
         "Very Good", "Loved", "Saint", "Pope?", "Practically Jesus",
         "Incarnation of Good", "Bernie Sanders"];
+let TRUST_TABLE: string[] = ["Very unreliable", "Unreliable", "Neutral",
+        "Reliable", "Very reliable"];
 
 let money: number = 0;
 let loans: number = 0;
@@ -82,7 +84,10 @@ function update() {
     $("#money").html(Util.get_money_formatted(money));
     $("#loans").html(Util.get_money_formatted(loans));
     $("#stockworth").html(Util.get_money_formatted(get_stock_worth()));
+
     $("#rep").html(get_reputation_message());
+    $("#trust").html(get_trusted_message());
+    $("#maxloan").html(Util.get_money_formatted(get_max_loans()));
 }
 
 /* Reputation */
@@ -96,12 +101,22 @@ function get_reputation_message(): string {
     return REP_TABLE[rep];
 }
 
+function get_trusted_message(): string {
+    let trust = Math.round(get_trusted_scaled());
+    if (trusted < 0) {
+        trust = 2 - trust;
+    } else {
+        trust += 2;
+    }
+    return TRUST_TABLE[trust];
+}
+
 function get_reputation_scaled(): number {
     return Math.min(10, Math.pow(Math.abs(reputation), 0.8));
 }
 
 function get_trusted_scaled(): number {
-    return Math.min(10, Math.pow(Math.abs(trusted), 0.9));
+    return Math.min(2, Math.pow(Math.abs(trusted), 0.25));
 }
 /* /Reputation */
 
@@ -137,7 +152,7 @@ function get_max_loans(): number {
     } else {
         scaled_trusted += 10;
     }
-    return (get_worth() + 10000) * (scaled_trusted / 20 * 1.5 + 0.25);
+    return Math.max(0, (get_worth() + 10000) * (scaled_trusted / 20 * 1.5 + 0.25));
 }
 
 function pay_loans() {
@@ -197,7 +212,9 @@ function buy_stock(stock: Stock, amount: number = -1) {
             Materialize.toast("Your max investment is too low!", 5000, "red");
         }
     }
-    amount = Util.clamp(amount, 0, stock.get_total_amount() - stock.get_bought_amount());
+    let max_buyable = Math.max(0, Math.floor((money + get_max_loans() - loans) / stock.get_price()));
+    let available = stock.get_total_amount() - stock.get_bought_amount();
+    amount = Util.clamp(amount, 0, Math.min(max_buyable, available));
     let total_price = amount * stock.get_price();
 
     /* Take money */
