@@ -50,14 +50,16 @@ class Util {
     }
 
     public static get_money_formatted(amount: number): string {
-        let digits = amount.toFixed(0).length;
+        let digits = Math.abs(amount).toFixed(0).length;
         let loan = amount < 0 ? "red-text" : "";
         let power = Math.min(Math.floor(digits / 3), Util.prefixes.length);
         return "<span class='" + loan + "'>" + Util.get_money_formatted_without_shortening((amount / Math.pow(1000, power))) + (power > 0 ? Util.prefixes[Util.prefix_type][power - 1] : "") + "</span>";
     }
 
     public static get_money_formatted_without_shortening(amount: number): string {
-        let result = amount.toFixed(1);
+        let digits = Math.abs(amount).toFixed(0).length;
+        let power = Math.min(Math.floor(digits / 3), Util.prefixes.length);
+        let result = amount.toFixed(3 - (digits - power * 3));
         if (result.substring(0, 1) === "-") {
             result = "-$" + result.substring(1);
         } else {

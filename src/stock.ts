@@ -39,7 +39,7 @@ class Stock {
 
         this.set_name(Util.generate_name());
         this.set_price(1000);
-        this.set_total_amount(Math.floor(Math.max(5, Math.random() * Math.pow(100, Math.floor(Math.random() * 3)))));
+        this.set_total_amount(Math.floor(Math.max(5, Math.random() * Math.pow(10, 1 + Math.round(Math.random() * 2)))));
         this.set_can_buy(true);
         this.set_can_sell(false);
 

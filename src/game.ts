@@ -47,6 +47,9 @@ function update() {
         }
     }
 
+    /* Update loan interest */
+    loans += loans * 0.01 * delta_time;
+
     /* Update background */
     let scaledRep = (Math.min(Math.pow(Math.abs(reputation), 0.8), 10) / 10);
     if (reputation < 0) {
