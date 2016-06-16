@@ -7,6 +7,8 @@
  */
 
 class Stock {
+    public static price_change_modifier = 0;
+
     private static used_ids: number = 0;
 
     /* An unique identifier for this stock (to differentiate stocks in the html) */
@@ -38,7 +40,7 @@ class Stock {
         this.price_change_time = this.new_price_change_time();
 
         this.set_name(Util.generate_name());
-        this.set_price(1000);
+        this.set_price(10 * Math.pow(10, 2 + Stock.price_change_modifier));
         this.set_total_amount(Math.floor(Math.max(5, Math.random() * Math.pow(10, 1 + Math.round(Math.random() * 2)))));
         this.set_can_buy(true);
         this.set_can_sell(false);
@@ -54,11 +56,11 @@ class Stock {
     }
 
     private new_price_change_range(): number {
-        return 250 * (Math.random() * 0.5 + 0.75);
+        return 5 * Math.pow(10, 2 + Stock.price_change_modifier) * (Math.random() * 0.5 + 0.75);
     }
 
     private new_price_change_per_second(): number {
-        let change = (Math.random() * 2 - 1);
+        let change = (Math.random() * 2 - 1) + 0.3 * Stock.price_change_modifier;
         if (change < -0.8 && this.has_attribute("reputation-up") && Math.random() < 0.9) {
             change *= 3;
         }
@@ -69,11 +71,11 @@ class Stock {
     }
 
     private new_price_change_volatility(): number {
-        return 0.5 + Math.random();
+        return 0.75 + Math.random() + 0.5 * Stock.price_change_modifier;
     }
 
     private new_price_change_time(): number {
-        return Date.now() + this.price_change_volatility * 10000;
+        return Date.now() + this.price_change_volatility * 10000 + 5000 * Stock.price_change_modifier;
     }
 
     public update(delta_time: number) {

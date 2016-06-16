@@ -34,7 +34,7 @@
                 <!-- /MAIN MENU -->
 
                 <!-- GAME -->
-                <div id="game" style="display:none">
+                <div id="game" class="hide">
                     <!-- Options quickmenu -->
                     <div class="fixed-action-btn" style="top: 1vh; right: 1vw;">
                         <button class="btn-floating btn-large waves-effect waves-light modal-trigger" data-target="options-modal" onclick="options_open()">
@@ -101,10 +101,38 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="tutorial-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="input-field">
+                                <h5>Investment ($) per click</h5>
+                                <input value="10000" id="investment-amount" type="text">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col s12">
+                                <button class="btn waves-effect waves-light cyan modal-close" onclick="$('#tutorial-modal').closeModal()">Ok</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="options-modal" class="modal">
                         <div class="modal-content">
                             <div class="row">
                                 <h4>Options</h4>
+
+                                <!-- Currency symbol -->
+                                <div class="input-field col s12">
+                                    <h5>Difficulty</h5>
+                                    <select id="difficulty">
+                                        <option value="0">Very Easy</option>
+                                        <option value="1">Easy</option>
+                                        <option value="2" selected>Normal</option>
+                                        <option value="3">Hard</option>
+                                        <option value="4">Very Hard</option>
+                                    </select>
+                                </div>
+                                <!-- /Currency symbol -->
 
                                 <!-- Number formats -->
                                 <div class="input-field col s12">
@@ -127,6 +155,11 @@
                                 <!-- /Currency symbol -->
                             </div>
                             <div class="col s12"><p></p></div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col s12 ">
+                                <button class="btn waves-effect waves-light cyan modal-close center-align" onclick="$('#tutorial-modal').closeModal()">Ok</button>
+                            </div>
                         </div>
                     </div>
                 </div>

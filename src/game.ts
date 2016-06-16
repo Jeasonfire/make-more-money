@@ -16,9 +16,9 @@
 
 let REP_TABLE: string[] = ["Martin Shkreli", "Incarnation of Evil",
         "Practically Satan", "Literally Hitler", "Evil", "Hated", "Very Bad",
-        "Bad", "Disliked", "Unpleasant", "Unknown", "Nice", "Liked", "Good",
-        "Very Good", "Loved", "Saint", "Pope?", "Practically Jesus",
-        "Incarnation of Good", "Bernie Sanders"];
+        "Bad", "Disliked", "Unpleasant", "Neutral", "Nice", "Liked", "Good",
+        "Very Good", "Loved", "Saint", "Figuratively Gandhi",
+        "Practically Jesus", "Incarnation of Good", "Bernie Sanders"];
 let TRUST_TABLE: string[] = ["Very unreliable", "Unreliable", "Neutral",
         "Reliable", "Very reliable"];
 
@@ -29,10 +29,13 @@ let loans: number = 0;
 let reputation: number = 0;
 let trusted: number = 0;
 let stocks: Stock[] = [];
+
 let target_stocks_amount: number = 0;
 let target_stocks_amount_max: number = 5;
 let target_stocks_amount_change_time: number = 0;
+
 let investment_amount: number = $("#investment-amount").val();
+let interest_rate: number = 0.01;
 
 let last_time = Date.now();
 function game_update() {
@@ -53,7 +56,7 @@ function game_update() {
     }
 
     /* Update loan interest */
-    loans += loans * 0.01 * delta_time;
+    loans += loans * interest_rate * delta_time;
 
     /* Update trust */
     if (get_worth() < 0) {
@@ -185,7 +188,8 @@ function load_old_invest_amount() {
 function update_investment_amount() {
     let value_str = $("#investment-amount").val();
     let value = Math.min(Math.pow(10, 15), Math.max(0, parseInt(value_str.replace(/ /g, ""))));
-    if (value !== undefined && !isNaN(value) && value <= Number.MAX_VALUE && value >= 0) {
+    console.log("Value: " + value + ", value_str: " + value_str);
+    if (value !== undefined && !isNaN(value)) {
         $("#investment-amount-button").html("$" + value);
         investment_amount = value;
     } else {
@@ -283,6 +287,13 @@ function options_open() {
 function options_close() {
     Util.prefix_type = parseInt($("#number-format").val());
     Util.currency = $("#currency-symbol").val();
+    switch ($("#difficulty").val()) {
+        case "0": Stock.price_change_modifier = 1.0; break;
+        case "1": Stock.price_change_modifier = 0.25; break;
+        case "2": Stock.price_change_modifier = 0.0; break;
+        case "3": Stock.price_change_modifier = -0.25; break;
+        case "4": Stock.price_change_modifier = -1.0; break;
+    }
     in_options = false;
 }
 /* /Options */
@@ -300,7 +311,7 @@ $(document).ready(() => {
 });
 
 function close_mainmenu() {
-    $("#mainmenu").css({"display": "none"});
+    $("#mainmenu").addClass("hide");
 }
 
 function start_game() {
@@ -310,12 +321,16 @@ function start_game() {
 
 function resume_game() {
     game_running = true;
-    $("#game").css({"display": ""});
+    $("#game").removeClass("hide");
     last_time = Date.now();
     game_update();
 }
 
+function pause_game() {
+    game_running = false;
+}
+
 function stop_game() {
     game_running = false;
-    $("#game").css({"display": "none"});
+    $("#game").addClass("hide");
 }
