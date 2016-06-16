@@ -53,6 +53,15 @@ function update() {
     /* Update loan interest */
     loans += loans * 0.01 * delta_time;
 
+    /* Update trust */
+    if (get_worth() < 0) {
+        trusted -= 0.1 * delta_time;
+    } else if (get_worth() > 0) {
+        trusted += 0.05 * delta_time;
+    } else {
+        trusted += 0.025 * delta_time * (trusted < 0 ? 1 : (trusted > 0 ? -1 : 0));
+    }
+
     /* Update background */
     let scaledRep = (get_reputation_scaled() / 10);
     if (reputation < 0) {
@@ -63,10 +72,10 @@ function update() {
     }
 
     /* Update bailout button */
-    if (loans > get_market_worth() && $("#bailout").hasClass("disabled")) {
+    if (can_bailout() && $("#bailout").hasClass("disabled")) {
         $("#bailout").removeClass("disabled");
     }
-    if (loans <= get_market_worth() && !$("#bailout").hasClass("disabled")) {
+    if (!can_bailout() && !$("#bailout").hasClass("disabled")) {
         $("#bailout").addClass("disabled");
     }
 
@@ -148,11 +157,11 @@ function get_market_worth(): number {
 function get_max_loans(): number {
     let scaled_trusted = get_trusted_scaled();
     if (trusted < 0) {
-        scaled_trusted = 10 - scaled_trusted;
+        scaled_trusted = 2 - scaled_trusted;
     } else {
-        scaled_trusted += 10;
+        scaled_trusted += 2;
     }
-    return Math.max(0, (get_worth() + 10000) * (scaled_trusted / 20 * 1.5 + 0.25));
+    return Math.max(0, (get_worth() + 10000) * (scaled_trusted / 4 * 1.5 + 0.25));
 }
 
 function pay_loans() {
@@ -171,9 +180,9 @@ function load_old_invest_amount() {
 
 function update_investment_amount() {
     let value_str = $("#investment-amount").val();
-    let value = parseInt(value_str.replace(/ /g, ""));
-    if (value !== undefined && !isNaN(value)) {
-        $("#investment-amount-button").html("$" + value_str);
+    let value = Math.min(Math.pow(10, 15), Math.max(0, parseInt(value_str.replace(/ /g, ""))));
+    if (value !== undefined && !isNaN(value) && value <= Number.MAX_VALUE && value >= 0) {
+        $("#investment-amount-button").html("$" + value);
         investment_amount = value;
     } else {
         load_old_invest_amount();
@@ -181,8 +190,12 @@ function update_investment_amount() {
     }
 }
 
+function can_bailout() {
+    return get_stock_worth() === 0 && money === 0 && loans > 0;
+}
+
 function bailout() {
-    if (loans > get_market_worth()) {
+    if (can_bailout()) {
         this.reputation -= Math.sqrt(loans) / 50;
         this.loans = 0;
     }
