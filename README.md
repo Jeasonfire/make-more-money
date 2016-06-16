@@ -15,3 +15,18 @@ Make More Money! is a game about investing\* and becoming rich. Invest in X corp
 This game (everything in this repository, excluding the /fonts/ and /lib/ directories.) is available under the CC0 license, so feel free to do whatever you want with this game. For more information, see COPYING.txt or [the Creative Commons page on CC0](http://creativecommons.org/publicdomain/zero/1.0/). And, of course, the libraries and other things made by other people (/fonts/ and /lib/) are still licensed under their respective licenses.
 
 Note: Even though you can use everything (except /fonts/ and /lib/) here as you please, I'd be interested to see what you're doing with this project. So if you'd like, please send me a link to your project to contact@jeasonfi.re <3
+
+<p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
+	<a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/">
+	<img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" alt="CC0" style="border-style: none;">
+	</a>
+	<br>
+  To the extent possible under law,
+	<a rel="dct:publisher" href="https://jeasonfi.re">
+	<span property="dct:title">Jens "Jeasonfire" Pitkänen</span></a>
+	has waived all copyright and related or neighboring rights to
+	<span property="dct:title">Make More Money!</span>.
+This work is published from:
+	<span property="vcard:Country" datatype="dct:ISO3166" content="FI" about="https://jeasonfi.re" data-redactor-tag="span">
+	Finland</span>.
+</p>
