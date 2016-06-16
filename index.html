@@ -23,7 +23,7 @@
 
                 <!-- MAIN MENU -->
                 <div id="mainmenu">
-                    <div class="col s12 waves-effect waves-light z-depth-1 red white-text" style="padding:10px" onclick="close_mainmenu();start_game()">
+                    <div class="col s12 waves-effect waves-light z-depth-1 red white-text modal-trigger" style="padding:10px" data-target="tutorial-modal" onclick="close_mainmenu();start_game();tutorial_open()">
                         <h4>Begin the exploitation of the free market!</h4>
                     </div>
                     <div class="col s12"><p></p></div>
@@ -37,8 +37,11 @@
                 <div id="game" class="hide">
                     <!-- Options quickmenu -->
                     <div class="fixed-action-btn" style="top: 1vh; right: 1vw;">
+                        <button class="btn-floating btn-large waves-effect waves-light modal-trigger" data-target="tutorial-modal" onclick="tutorial_open()">
+                            <i class="large material-icons">info</i>
+                        </button>
                         <button class="btn-floating btn-large waves-effect waves-light modal-trigger" data-target="options-modal" onclick="options_open()">
-                            <i class="large material-icons grey white-text">settings</i>
+                            <i class="large material-icons">settings</i>
                         </button>
                     </div>
                     <!-- /Options quickmenu -->
@@ -85,6 +88,7 @@
 
                 <!-- Modals ("popups") -->
                 <div>
+                    <!-- Investment modal -->
                     <div id="investment-amount-modal" class="modal">
                         <div class="modal-content">
                             <div class="input-field">
@@ -101,21 +105,44 @@
                             </div>
                         </div>
                     </div>
+                    <!-- /Investment modal -->
 
+                    <!-- Tutorial modal -->
                     <div id="tutorial-modal" class="modal">
                         <div class="modal-content">
-                            <div class="input-field">
-                                <h5>Investment ($) per click</h5>
-                                <input value="10000" id="investment-amount" type="text">
+                            <div class="col s12">
+                                <ul class="collapsible popout" data-collapsible="accordion">
+                                    <li>
+                                        <div class="collapsible-header"><span class="flow-text"><i class="material-icons small">thumb_up</i>Reputation</span></div>
+                                        <div class="collapsible-body"><p class="flow-text">Reputation is a cosmetic stat that changes depending on whether the stocks you're buying have a <i class="material-icons chip small green">thumb_up</i> -icon or a <i class="material-icons chip small red">thumb_down</i> -icon.</p></div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header"><span class="flow-text"><i class="material-icons small">insert_chart</i>Trust</span></div>
+                                        <div class="collapsible-body"><p class="flow-text">Trust is a stat that you gain and lose by having positive and negative net worth, respectively. It affects your maximum loan amount; higher trust = more loans.</p></div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header"><span class="flow-text"><i class="material-icons small">trending_down</i>How to lose</span></div>
+                                        <div class="collapsible-body"><p class="flow-text">Go to debt by buying something, make sure you're not making money, and wait for the interest to ramp up!</p></div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header"><span class="flow-text"><i class="material-icons small">trending_up</i>How to win</span></div>
+                                        <div class="collapsible-body">
+                                            <p class="flow-text">Pay off your loans with the money you gain by investing in stocks that are going up.<br>¯\_(ツ)_/¯</p>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <div class="col s12">
-                                <button class="btn waves-effect waves-light cyan modal-close" onclick="$('#tutorial-modal').closeModal()">Ok</button>
+                                <button class="btn waves-effect waves-light cyan modal-action modal-close">Ok</button>
                             </div>
+                            <div class="col s12"><p></p></div>
                         </div>
                     </div>
+                    <!-- /Tutorial modal -->
 
+                    <!-- Options modal -->
                     <div id="options-modal" class="modal">
                         <div class="modal-content">
                             <div class="row">
@@ -157,11 +184,13 @@
                             <div class="col s12"><p></p></div>
                         </div>
                         <div class="modal-footer">
-                            <div class="col s12 ">
-                                <button class="btn waves-effect waves-light cyan modal-close center-align" onclick="$('#tutorial-modal').closeModal()">Ok</button>
+                            <div class="col s12">
+                                <button class="btn waves-effect waves-light cyan modal-action modal-close">Ok</button>
                             </div>
+                            <div class="col s12"><p></p></div>
                         </div>
                     </div>
+                    <!-- /Options modal -->
                 </div>
                 <!-- /Modals ("popups") -->
 

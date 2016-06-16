@@ -231,7 +231,11 @@ let stock_template_html = `
 
     <!-- Price -->
     <div class="col s8">
-        <h5 class="flow-text right">Owned: <b><span id="stock-id-owned-percent"></span>%</b> - Value: <b><span id="stock-id-total-value"></span></b> (<span id="stock-id-price"></span> / stock)</h5>
+        <h5 class="col s12 flow-text right">
+            <div class="col s3">Owned:<br><b><span id="stock-id-owned-percent"></span>%</b></div>
+            <div class="col s4">Value:<br><b><span id="stock-id-total-value"></span></b></div>
+            <div class="col s5">Per stock:<br><b><span id="stock-id-price"></span></b></div>
+        </h5>
     </div>
     <!-- /Price -->
 

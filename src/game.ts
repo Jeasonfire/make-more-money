@@ -103,7 +103,9 @@ function game_update() {
     $("#trust").html(get_trusted_message());
     $("#maxloan").html(Util.get_money_formatted(get_max_loans()));
 
-    requestAnimationFrame(game_update);
+    if (game_running) {
+        requestAnimationFrame(game_update);
+    }
 }
 
 /* Reputation */
@@ -282,6 +284,7 @@ function sell_all_stocks() {
 /* Options */
 let in_options = false;
 function options_open() {
+    pause_game();
     in_options = true;
 }
 function options_close() {
@@ -294,9 +297,22 @@ function options_close() {
         case "3": Stock.price_change_modifier = -0.25; break;
         case "4": Stock.price_change_modifier = -1.0; break;
     }
+    resume_game();
     in_options = false;
 }
 /* /Options */
+
+/* Tutorial */
+let in_tutorial = false;
+function tutorial_open() {
+    pause_game();
+    in_tutorial = true;
+}
+function tutorial_close() {
+    resume_game();
+    in_tutorial = false;
+}
+/* /Tutorial */
 
 /* Start the game */
 $(document).ready(() => {
@@ -304,6 +320,12 @@ $(document).ready(() => {
         complete: () => {
             if (in_options) {
                 options_close();
+            }
+            console.log("asd");
+            if (in_tutorial) {
+                console.log("Closing from tutorial");
+                tutorial_close();
+                console.log("After closing, game is running: " + game_running);
             }
         }
     });
@@ -317,11 +339,11 @@ function close_mainmenu() {
 function start_game() {
     create_stock();
     resume_game();
+    $("#game").removeClass("hide");
 }
 
 function resume_game() {
     game_running = true;
-    $("#game").removeClass("hide");
     last_time = Date.now();
     game_update();
 }
