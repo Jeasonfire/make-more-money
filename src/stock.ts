@@ -61,7 +61,6 @@ class Stock {
         let change = (Math.random() * 2 - 1);
         if (change < -0.8 && this.has_attribute("reputation-up") && Math.random() < 0.9) {
             change *= 3;
-            Materialize.toast(this.get_shortened_name() + " is having major money problems!", 3000, "red");
         }
         if (change < 0 && this.has_attribute("reputation-down") && this.has_attribute("price-up")) {
             change += 0.2;
@@ -220,6 +219,8 @@ let StockAttribute = {
 
 let stock_template_html = `
 <div id="stock-id-stock" class="col s12">
+    <div class="divider"></div>
+
     <!-- Name -->
     <div class="col s4">
         <h5 id="stock-id-name" class="flow-text">The Boop Corporation</h5>
@@ -255,5 +256,6 @@ let stock_template_html = `
         <!-- /Stock attributes -->
     </div>
     <!-- /Buttons & attributes -->
+    <div class="col s12"><p></p></div>
 </div>
 `;

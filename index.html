@@ -21,43 +21,67 @@
                 </div>
                 <!-- /Header -->
 
-                <!-- Stocks! -->
-                <div class="col s12 m8">
-                    <h4>Stocks</h4>
-                    <div id="stocks" class="row"></div>
+                <!-- MAIN MENU -->
+                <div id="mainmenu">
+                    <div class="col s12 waves-effect waves-light z-depth-1 red white-text" style="padding:10px" onclick="close_mainmenu();start_game()">
+                        <h4>Begin the exploitation of the free market!</h4>
+                    </div>
+                    <div class="col s12"><p></p></div>
+                    <div class="col s12 waves-effect waves-light z-depth-1 cyan white-text modal-trigger" style="padding:10px" data-target="options-modal" onclick="options_open()">
+                        <h4>Lobby for some options.</h4>
+                    </div>
                 </div>
-                <!-- /Stocks -->
+                <!-- /MAIN MENU -->
 
-                <!-- Stats -->
-                <div class="col s12 m4">
-                    <div class="section">
-                        <h4>Net worth: <b id="networth"></b></h4>
-                        <h5>Cash: <b id="money"></b></h5>
-                        <h5>Loans: <b id="loans" class="tooltipped" data-position="right" data-delay="10" data-tooltip="1% interest per second"></b></h5>
-                        <h5>Money in stocks: <b id="stockworth"></b></h5>
+                <!-- GAME -->
+                <div id="game" style="display:none">
+                    <!-- Options quickmenu -->
+                    <div class="fixed-action-btn" style="top: 1vh; right: 1vw;">
+                        <button class="btn-floating btn-large waves-effect waves-light modal-trigger" data-target="options-modal" onclick="options_open()">
+                            <i class="large material-icons grey white-text">settings</i>
+                        </button>
                     </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <h5>Reputation: <b id="rep"></b></h5>
-                        <h5>Trust: <b id="trust"></b></h5>
-                        <h5>Maximum loan amount: <b id="maxloan"></b></h5>
+                    <!-- /Options quickmenu -->
+
+                    <!-- Stocks! -->
+                    <div class="col s12 m8">
+                        <h4>Stocks</h4>
+                        <div id="stocks" class="row"></div>
                     </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <button class="btn waves-effect waves-light cyan" onclick="pay_loans()">Pay off loans</button>
-                        <button class="btn waves-effect waves-light red" onclick="sell_all_stocks()">Sell all stocks!</button>
+                    <!-- /Stocks -->
+
+                    <!-- Stats -->
+                    <div class="col s12 m4">
+                        <div class="section">
+                            <h4>Net worth: <b id="networth"></b></h4>
+                            <h5>Cash: <b id="money"></b></h5>
+                            <h5>Loans: <b id="loans" class="tooltipped" data-position="right" data-delay="10" data-tooltip="1% interest per second"></b></h5>
+                            <h5>Money in stocks: <b id="stockworth"></b></h5>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="section">
+                            <h5>Reputation: <b id="rep"></b></h5>
+                            <h5>Trust: <b id="trust"></b></h5>
+                            <h5>Maximum loan amount: <b id="maxloan"></b></h5>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="section">
+                            <button class="btn waves-effect waves-light cyan" onclick="pay_loans()">Pay off loans</button>
+                            <button class="btn waves-effect waves-light red" onclick="sell_all_stocks()">Sell all stocks!</button>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="section">
+                            <button id="bailout" class="btn waves-effect waves-light cyan tooltipped" data-position="bot" data-delay="10" data-tooltip="Get the government to pay off your loans. You can't get bailed out if you have any cash or stocks." onclick="bailout()">Government bailout<i class="material-icons right">send</i></button>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="section">
+                            <h5>Current <b class="tooltipped" data-position="top" data-delay="10" data-tooltip="The amount of money that will be spent on a company when you press the 'plus' button." onclick="bailout()">max investment amount</b> per click: </h5>
+                            <button id="investment-amount-button" class="btn waves-effect waves-light cyan modal-trigger tooltipped" data-position="right" data-delay="10" data-tooltip="Change the max investment amount." data-target="investment-amount-modal" onclick="save_old_invest_amount()">$10000</button>
+                        </div>
                     </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <button id="bailout" class="btn waves-effect waves-light cyan tooltipped" data-position="bot" data-delay="10" data-tooltip="Get the government to pay off your loans. You can't get bailed out if you have any cash or stocks." onclick="bailout()">Government bailout<i class="material-icons right">send</i></button>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <h5>Current <b class="tooltipped" data-position="top" data-delay="10" data-tooltip="The amount of money that will be spent on a company when you press the 'plus' button." onclick="bailout()">max investment amount</b> per click: </h5>
-                        <button id="investment-amount-button" class="btn waves-effect waves-light cyan modal-trigger tooltipped" data-position="right" data-delay="10" data-tooltip="Change the max investment amount." data-target="investment-amount-modal" onclick="save_old_invest_amount()">$10000</button>
-                    </div>
+                    <!-- /Stats -->
                 </div>
-                <!-- /Stats -->
+                <!-- /GAME -->
 
                 <!-- Modals ("popups") -->
                 <div>
@@ -75,6 +99,34 @@
                             <div class="col s6 right">
                                 <button class="btn waves-effect waves-light modal-close left" onclick="load_old_invest_amount()">Cancel</button>
                             </div>
+                        </div>
+                    </div>
+                    <div id="options-modal" class="modal">
+                        <div class="modal-content">
+                            <div class="row">
+                                <h4>Options</h4>
+
+                                <!-- Number formats -->
+                                <div class="input-field col s12">
+                                    <h5>Number format</h5>
+                                    <h6>Or: how you say the number 1 000 000 000</h6>
+                                    <select id="number-format">
+                                        <option value="0" selected>1G</option>
+                                        <option value="1">1 Milliard</option>
+                                        <option value="2">1 Thousand Million</option>
+                                        <option value="3">1 Billion</option>
+                                    </select>
+                                </div>
+                                <!-- /Number formats -->
+
+                                <!-- Currency symbol -->
+                                <div class="input-field col s12">
+                                    <h5>Currency symbol</h5>
+                                    <input value="$" id="currency-symbol" type="text">
+                                </div>
+                                <!-- /Currency symbol -->
+                            </div>
+                            <div class="col s12"><p></p></div>
                         </div>
                     </div>
                 </div>

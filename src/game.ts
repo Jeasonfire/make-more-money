@@ -22,17 +22,20 @@ let REP_TABLE: string[] = ["Martin Shkreli", "Incarnation of Evil",
 let TRUST_TABLE: string[] = ["Very unreliable", "Unreliable", "Neutral",
         "Reliable", "Very reliable"];
 
+let game_running = false;
+
 let money: number = 0;
 let loans: number = 0;
 let reputation: number = 0;
 let trusted: number = 0;
 let stocks: Stock[] = [];
 let target_stocks_amount: number = 0;
+let target_stocks_amount_max: number = 5;
 let target_stocks_amount_change_time: number = 0;
 let investment_amount: number = $("#investment-amount").val();
 
 let last_time = Date.now();
-function update() {
+function game_update() {
     /* Update timer */
     let now_time = Date.now();
     let delta_time = (now_time - last_time) / 1000.0;
@@ -43,7 +46,6 @@ function update() {
         if (stocks[i] !== undefined) {
             stocks[i].update(delta_time);
             if (stocks[i].get_price() <= 0) {
-                Materialize.toast(stocks[i].get_name() + " is now bankrupt!", 5000, "red");
                 stocks[i].remove();
                 stocks.splice(i, 1);
             }
@@ -80,7 +82,7 @@ function update() {
     }
 
     /* New stocks if there aren't enough of them! */
-    if (target_stocks_amount_change_time < Date.now()) {
+    if (target_stocks_amount < target_stocks_amount_max && target_stocks_amount_change_time < Date.now()) {
         target_stocks_amount_change_time = Date.now() + 1000 * (10 + Math.pow(3, target_stocks_amount));
         target_stocks_amount++;
     }
@@ -97,6 +99,8 @@ function update() {
     $("#rep").html(get_reputation_message());
     $("#trust").html(get_trusted_message());
     $("#maxloan").html(Util.get_money_formatted(get_max_loans()));
+
+    requestAnimationFrame(game_update);
 }
 
 /* Reputation */
@@ -271,10 +275,47 @@ function sell_all_stocks() {
 }
 /* /Stock utilities */
 
+/* Options */
+let in_options = false;
+function options_open() {
+    in_options = true;
+}
+function options_close() {
+    Util.prefix_type = parseInt($("#number-format").val());
+    Util.currency = $("#currency-symbol").val();
+    in_options = false;
+}
+/* /Options */
+
 /* Start the game */
 $(document).ready(() => {
-    $(".modal-trigger").leanModal();
-
-    create_stock();
-    setInterval(update, 1000 / 60);
+    $(".modal-trigger").leanModal({
+        complete: () => {
+            if (in_options) {
+                options_close();
+            }
+        }
+    });
+    $("select").material_select();
 });
+
+function close_mainmenu() {
+    $("#mainmenu").css({"display": "none"});
+}
+
+function start_game() {
+    create_stock();
+    resume_game();
+}
+
+function resume_game() {
+    game_running = true;
+    $("#game").css({"display": ""});
+    last_time = Date.now();
+    game_update();
+}
+
+function stop_game() {
+    game_running = false;
+    $("#game").css({"display": "none"});
+}

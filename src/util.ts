@@ -24,25 +24,26 @@ class Util {
     private static prefixes: string[][] = [
         ["k", "M", "G", "T", "P", "E", "Z", "Y"],
         [
-            " thousand", " million", " milliard", " billion", " billiard",
-            " trillion", " trilliard", " quadrillion", " quadrilliard",
-            " quintillion", " quintilliard", " sextillion", " sextilliard",
-            " septillion", " septilliard"
+            " Thousand", " Million", " Milliard", " Billion", " Billiard",
+            " Trillion", " Trilliard", " Quadrillion", " Quadrilliard",
+            " Quintillion", " Quintilliard", " Sextillion", " Sextilliard",
+            " Septillion", " Septilliard"
         ],
         [
-            " thousand", " million", " thousand million", " billion",
-            " thousand billion", " trillion", " thousand trillion",
-            " quadrillion", " thousand quadrillion", " quintillion",
-            " thousand quintillion", " sextillion", " thousand sextillion",
-            " septillion", " thousand septillion"
+            " Thousand", " Million", " Thousand Million", " Billion",
+            " Thousand Billion", " Trillion", " Thousand Trillion",
+            " Quadrillion", " Thousand Quadrillion", " Quintillion",
+            " Thousand Quintillion", " Sextillion", " Thousand Sextillion",
+            " Septillion", " Thousand Septillion"
         ],
         [
-            " thousand", " million", " billion", " trillion", " quadrillion",
-            " quintillion", " sextillion", " septillion"
+            " Thousand", " Million", " Billion", " Trillion", " Quadrillion",
+            " Quintillion", " Sextillion", " Septillion"
         ]
     ];
 
     public static prefix_type: number = Util.PREFIXES_METRIC;
+    public static currency: string = "$";
 
     public static generate_name(): string {
         return Util.names[Math.floor(Util.names.length * Math.random())] + " " +
@@ -61,9 +62,9 @@ class Util {
         let power = Math.min(Math.floor(digits / 3), Util.prefixes.length);
         let result = amount.toFixed(3 - (digits - power * 3));
         if (result.substring(0, 1) === "-") {
-            result = "-$" + result.substring(1);
+            result = "-" + Util.currency + result.substring(1);
         } else {
-            result = "$" + result;
+            result = Util.currency + result;
         }
         return result;
     }
